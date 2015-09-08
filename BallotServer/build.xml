@@ -1,0 +1,287 @@
+<project name="BallotServer" default="build" basedir=".">
+
+	<!-- before imports - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+	<!-- load environment variables as properties -->
+	<property environment="env"/>
+
+	<!-- load properties files -->
+	<property file="build.properties"/>
+	<property file="../build.properties"/>
+	<property file="${user.home}/build.properties"/>
+
+	<!-- default folder location properties -->
+	<property name="src.rel-dir" value="src"/>
+	<property name="tests.src.rel-dir" value="tests"/>
+	<property name="etc.rel-dir" value="etc"/>
+	<property name="build.rel-dir" value="build"/>
+	<property name="dist.rel-dir" value="dist"/>
+	<property name="doc.rel-dir" value="${dist.rel-dir}/javadoc" />
+	<property name="config.rel-dir" value="config" />
+	<property name="web-content.rel-dir" value="war" />
+	<property name="lib.rel-dir" value="${web-content.rel-dir}/WEB-INF/lib"/>
+	<property name="dir" value="${src.rel-dir}/xml" />
+	<property name="sirsframework.rel-dir" value="../SIRSFramework/"/>
+	<property name="trustedcenter.rel-dir" value="../TrustedCenter/"/>
+	<property name="registration.rel-dir" value="../Registration/"/>
+	<property name="client.jar.rel-file" value="${dist.rel-dir}/${ant.project.name}.jar" />
+
+	<property name="src.java.rel-dir" value="${src.rel-dir}"/>
+	<property name="build.generated-src.rel-dir" value="${build.rel-dir}/src"/>
+	<property name="build.classes.rel-dir" value="${build.rel-dir}/classes"/>
+	<property name="web-content.classes.rel-dir" value="${web-content.rel-dir}/WEB-INF/classes"/>
+	
+	<property name="package.project.name" value="ballotserver"/>
+	<property name="gwt.module" value="ballotserver.BallotServer"/>
+	<property name="gwt.host-page" value="BallotServer.html"/>
+	<property name="gwt.module.rel-name" value="BallotServer"/>
+	<property name="deploy.context" value="${ant.project.name}" />
+	<property name="deploy.war.rel-file" value="${dist.rel-dir}/${deploy.context}.war"/>
+
+	<pathconvert property="package.project.rel-dir" pathsep=".">
+		<unpackagemapper from="${basedir}${file.separator}*" to="*"/>
+		<path location="${package.project.name}"/>
+	</pathconvert>
+
+	<!-- IMPORTS - - - - - -  - - - - - - - - - - - - - - - - - - - - - - - - -->
+	<import file="config/jax-ws-server/jax.xml"/>
+	<import file="./config/jax-ws-server/tomcat.xml"/>
+
+	<!-- after imports - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+	<!-- Web Service definitions -->
+	<property name="deploy.context" value="BallotServer"/>
+	<property name="jax-ws-server.wsdl.file-name" value="BallotServer.wsdl" />
+	<property name="jax-ws-server.wsdl.namespace" value="http://www.easyvote.com/ballotserver" />
+	<property name="jax-ws-server.wsdl.service-name" value="BallotServerService" />
+	<property name="jax-ws-server.wsdl.port-name" value="BallotServerPort" />
+	<property name="jax-ws-server.ties.package" value="ballotserver.ws.ties" />
+	<property name="jax-ws-server.ties.interface.simple-name" value="BallotServerPortType" />
+	<property name="jax-ws-server.impl.package" value="ballotserver.ws" />
+	<property name="jax-ws-server.impl.class.simple-name" value="BallotServerServiceImpl" />
+	<property name="jax-ws-server.wsdl.url" value="${web-content.rel-dir}/WEB-INF/wsdl/${jax-ws-server.wsdl.file-name}" />
+
+	<!-- classpaths -->
+	<!-- project classpath -->
+	<path id="project.classpath">
+		<!-- compiled classes -->
+		<pathelement location="${build.rel-dir}" />
+		<!-- GWT build-time libraries (must come first as they conflict with jasper-jdt.jar from Tomcat) -->
+		<pathelement location="${env.GWT_HOME}/gwt-user.jar"/>
+		<fileset dir="${env.GWT_HOME}" includes="gwt-dev*.jar" />
+		<!-- shared libraries (already provided by custom application server) -->
+		<fileset dir="${env.STEP_HOME}/lib" includes="*.jar"/>
+		<!-- application-specific libraries (not shared between different web applications)-->
+		<!--  (exclude GWT run-time library) -->
+		<fileset dir="${lib.rel-dir}" includes="**/*.jar" excludes="gwt-servlet.jar"/>
+		<fileset dir="${sirsframework.rel-dir}${dist.rel-dir}" includes="**/*.jar"/>
+		<fileset dir="${trustedcenter.rel-dir}${dist.rel-dir}" includes="**/*.jar"/>
+		<fileset dir="${registration.rel-dir}${dist.rel-dir}" includes="**/*.jar"/>
+	</path>
+	<!-- basic -->
+
+	<target name="init">
+		<mkdir dir="${build.rel-dir}"/>
+		<mkdir dir="${build.generated-src.rel-dir}"/>
+		<mkdir dir="${build.classes.rel-dir}"/>
+		<mkdir dir="${dist.rel-dir}"/>
+	</target>
+
+	<target name="clean" depends="eclipse-clean" description="Removes all generated resources">
+		<delete dir="${web-content.rel-dir}/${gwt.module.rel-name}" includeemptydirs="true" failonerror="false"
+				deleteonexit="true" />
+		<delete dir="${build.rel-dir}" includeemptydirs="true" failonerror="false"
+				deleteonexit="true" />
+		<delete dir="${dist.rel-dir}" includeemptydirs="true" failonerror="false"
+				deleteonexit="true" />
+	</target>
+	
+	<!-- web application -->
+
+	    
+		<target name="create-war" depends="build, generate-javascript" description="Create WAR deployable module">
+		<mkdir dir="${dist.rel-dir}"/>
+			<war destfile="${deploy.war.rel-file}"
+				 webxml="${web-content.rel-dir}/WEB-INF/web.xml">
+				<fileset dir="${web-content.rel-dir}" excludes="**/WEB-INF/classes/** **/WEB-INF/lib/**"/>
+				<fileset dir="${build.rel-dir}" includes="**/*.properties" />
+				<classes dir="${build.classes.rel-dir}" />
+				<classes dir="${build.rel-dir}" excludes="classes/*" />
+				<lib dir="${lib.rel-dir}"/>
+				<lib dir="${sirsframework.rel-dir}${dist.rel-dir}" includes="**/*.jar"/>
+				<lib dir="${trustedcenter.rel-dir}${dist.rel-dir}" includes="**/*.jar"/>
+				<lib dir="${registration.rel-dir}${dist.rel-dir}" includes="**/*.jar"/>
+			</war>
+		</target>
+
+	<target name="create-client-jar" depends="build" description="Create the WS client JAR file">
+		<mkdir dir="${dist.rel-dir}"/>
+		<jar destfile="${client.jar.rel-file}">
+			<!-- include only client classes and resources -->
+			<zipfileset dir="${build.rel-dir}">
+				<include name="**"/>
+			</zipfileset>
+			<zipfileset dir="${build.classes.rel-dir}">
+				<include name="**"/>
+			</zipfileset>
+		</jar>
+	</target>
+
+	<!-- compile -->
+
+	<property name="resources.to-copy" value="**/*.properties,**/*.xml"/>
+	<filterset id="resources.update-rules" begintoken="@" endtoken="@">
+		<filter token="tomcat.url" value="${tomcat.url}"/>
+<!--		<filter token="context" value=""/> in dev-mode, the root is the application -->
+		<filter token="context" value="/${deploy.context}"/>
+	</filterset>
+
+	<target name="prepare-resources" depends="init,-replace-jax-ws-server-tokens(dir),wsimport">
+		<!-- description="Prepare application resource files" -->
+		<copy todir="${build.rel-dir}" overwrite="true">
+			<fileset dir="${src.rel-dir}" includes="${resources.to-copy}"/>
+			<filterset refid="resources.update-rules"/>
+			<fileset dir="${src.rel-dir}" includes="**/*.xml" />
+		</copy>
+		<copy todir="${build.classes.rel-dir}" overwrite="true">
+			<fileset dir="${src.rel-dir}" includes="${resources.to-copy}"/>
+			<filterset refid="resources.update-rules"/>
+		</copy>
+	</target>
+	
+	<target name="compile-sources" depends="prepare-resources">
+		<javac destdir="${build.classes.rel-dir}" debug="true" debuglevel="lines,vars,source" optimize="true" deprecation="true" verbose="false">
+			<classpath refid="project.classpath" />
+			<src>
+				<pathelement path="${build.generated-src.rel-dir}:${src.rel-dir}"/>
+			</src>
+			<compilerarg line=""/><!-- "-Xlint:all", "-Xlint:all,-path", "-Xlint:all,-path,-unchecked" -->
+		</javac>
+	</target>
+	
+	<target name="build" depends="init, wsimport, compile-sources"
+		description="Compile Java source code"/>
+	
+		<!--                     -->
+	<!-- GWT-related targets -->
+	<!--                     -->
+		
+	<target name="check-javascript">
+		<condition property="javascript.uptodate">
+			<uptodate targetfile="${web-content.rel-dir}/easyvote/easyvote.nocache.js">
+				<srcfiles dir="${src.java.rel-dir}/${package.project.rel-dir}/client"/>
+			</uptodate>
+		</condition>
+	</target>
+	
+	<!-- should have dependency checks for client and views packages -->
+	<target name="generate-javascript" depends="build,check-javascript" unless="javascript.uptodate">
+		<java classname="com.google.gwt.dev.Compiler" fork="true" failonerror="true">
+			<classpath>
+				<pathelement location="${src.java.rel-dir}"/>
+				<pathelement location="${build.generated-src.rel-dir}" />
+				<path refid="project.classpath"/>
+			</classpath>
+			<!-- add jvmarg -Xss16M or similar if you see a StackOverflowError -->
+			<jvmarg value="-Xmx256M"/>
+			<!-- Additional arguments like -style PRETTY or -logLevel DEBUG -->
+			<arg value="-style"/>
+			<arg value="DETAILED"/>
+			<!-- output directory -->
+			<arg value="-war"/>
+			<arg value="${web-content.rel-dir}"/>
+			<!-- Module names to compile -->
+			<arg value="${gwt.module}"/>
+		</java>
+	</target>
+
+	<!-- runs web application in development mode -->
+	<target name="gwt-devmode" depends="eclipse-compile" description="Run web application in Development mode">
+		<java failonerror="true" fork="true" classname="com.google.gwt.dev.DevMode">
+			<classpath>
+				<pathelement location="${src.java.rel-dir}"/>
+				<pathelement location="${build.classes.rel-dir}"/>
+				<path refid="project.classpath"/>
+			</classpath>
+			<jvmarg value="-Xmx256M"/>
+			<arg value="-war"/>
+			<arg value="${web-content.rel-dir}"/>
+			<arg value="-startupUrl"/>
+			<arg value="${gwt.host-page}"/>
+			<!-- Module names to compile -->
+			<arg value="${gwt.module}"/>
+		</java>
+	</target>
+
+	<!--                         -->
+	<!-- Eclipse-related targets -->
+	<!--                         -->
+
+	<!-- targets useful to avoid Eclipse interference with the build process -->
+	<target name="eclipse-compile" depends="build" description="Compile Java source code on Eclipse">
+		<mkdir dir="${web-content.classes.rel-dir}"/>
+		<copy todir="${web-content.classes.rel-dir}" overwrite="true">
+			<fileset dir="${build.classes.rel-dir}"/>
+		</copy>
+	</target>
+
+	<target name="eclipse-clean">
+		<delete dir="${web-content.classes.rel-dir}" includeemptydirs="true" failonerror="false"
+				deleteonexit="true" />
+	</target>
+	
+	<!-- jax-ws-server -->
+
+	<property name="wsdl.rel-file" value="${jax-ws-server.wsdl.url}" />
+
+	<target name="wsimport" depends="init,-generate-wsdl-url" unless="recompile.flag">
+		<!-- description="Generate Web Service server-side Java code from WSDL" -->
+		<echo message="Executing wsimport to generate server-side code..." />
+		<echo message="WSDL: ${wsdl.rel-file}" />
+		<wsimport wsdl="${jax-ws-server.wsdl.url}"
+		                  debug="true"
+		                  verbose="true"
+		                  destdir="${build.rel-dir}"
+		                  sourcedestdir="${build.classes.rel-dir}"
+						  package="${jax-ws-server.ties.package}"
+		        >
+			
+		</wsimport>
+		<!-- The sources are in the build folder, for programmer reference -->
+	</target>
+	
+	<target name="-replace-jax-ws-server-tokens(dir)">
+	        <fail message="MUST DEFINE dir PROPERTY" unless="dir" />
+	        <!-- define composite properties -->
+	        <property name="jax-ws-server.ties.interface.name" value="${jax-ws-server.ties.package}.${jax-ws-server.ties.interface.simple-name}" />
+	        <property name="jax-ws-server.impl.class.name" value="${jax-ws-server.impl.package}.${jax-ws-server.impl.class.simple-name}" />
+	        <!-- perform simple value token replacements 
+	        <replace dir="${dir}" summary="${config-replaces-summary.option}">
+	            <replacefilter token="@jax-ws-server.wsdl.file-name@" value="${jax-ws-server.wsdl.file-name}" />
+	            <replacefilter token="@jax-ws-server.wsdl.namespace@" value="${jax-ws-server.wsdl.namespace}" />
+	            <replacefilter token="@jax-ws-server.wsdl.service-name@" value="${jax-ws-server.wsdl.service-name}" />
+	            <replacefilter token="@jax-ws-server.wsdl.port-name@" value="${jax-ws-server.wsdl.port-name}" />
+	            <replacefilter token="@jax-ws-server.ties.package@" value="${jax-ws-server.ties.package}" />
+	            <replacefilter token="@jax-ws-server.ties.interface.simple-name@" value="${jax-ws-server.ties.interface.simple-name}" />
+	            <replacefilter token="@jax-ws-server.ties.interface.name@" value="${jax-ws-server.ties.interface.name}" />
+	            <replacefilter token="@jax-ws-server.impl.package@" value="${jax-ws-server.impl.package}" />
+	            <replacefilter token="@jax-ws-server.impl.class.simple-name@" value="${jax-ws-server.impl.class.simple-name}" />
+	            <replacefilter token="@jax-ws-server.impl.class.name@" value="${jax-ws-server.impl.class.name}" />
+	        </replace> -->
+	        <!-- perform multi-line value token replacements 
+	        <replace dir="${dir}" token="@jax-ws-server.handler-chains@">
+	            <replacevalue><![CDATA[
+	            <jws:handler-chains xmlns:jws="http://java.sun.com/xml/ns/javaee">
+					<jws:handler-chain>
+					</jws:handler-chain>
+				</jws:handler-chains>
+	            ]]></replacevalue>
+	        </replace> -->
+	    </target>
+
+
+	
+<target name="rebuild" depends="clean,build">
+	<!-- description="Rebuild the project" -->
+</target>
+
+</project>

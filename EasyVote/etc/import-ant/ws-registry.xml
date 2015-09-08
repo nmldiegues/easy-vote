@@ -1,0 +1,115 @@
+<!--
+    ImportAnt
+    Copyright (C) 2004-2009  Miguel Filipe Leitao Pardal
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+    Contact the author at: miguel.pardal@ist.utl.pt
+-->
+<project name="ws-registry">
+
+	<!--       -->
+    <!-- PATHS -->
+    <!--       -->
+	<path id="ws-registry.jars.path">
+         <fileset dir="${env.STEP_HOME}/lib">
+            <include name="*.jar" />
+        </fileset>
+    </path>
+	<path id="project.lib.path">
+        <fileset dir="${lib.rel-dir}">
+            <include name="*.jar" />
+        </fileset>
+    </path>
+	
+    <path id="ws-registry.classpath">
+        <path refid="project.lib.path" />
+        <path refid="ws-registry.jars.path" />
+    </path>
+
+    <!--         -->
+    <!-- TARGETS -->
+    <!--         -->
+
+    <!-- MAIN TARGETS (name, description) -->
+	<target name="ws-publish" depends="init-ws-registry,build-ws-registry" description="Publish Web Service on registry">
+		<echo message="Publishing web service registration..." />
+		<java fork="true" classname="step.framework.ws.registry.Main">
+			<arg line="${ws-registry.publish.args}"/>
+			<classpath>
+				<path refid="ws-registry.classpath" />
+			</classpath>
+		</java>
+	</target>
+		
+	
+	<target name="ws-delete" depends="init-ws-registry,build-ws-registry" description="Delete Web Service from registry">
+        <fail message="MUST DEFINE ws-registry.delete.args PROPERTY" unless="ws-registry.delete.args" />
+        <echo message="Deleting Web Service registration..."/>
+        <java fork="true" classname="step.framework.ws.registry.Main">
+            <arg line="${ws-registry.delete.args}"/>
+            <classpath>
+                <path refid="ws-registry.classpath" />
+            </classpath>
+        </java>
+	</target>
+
+	<target name="ws-query" depends="init-ws-registry,build-ws-registry">
+		<!-- description="Query registry for Web Services" -->
+        <fail message="MUST DEFINE ws-registry.query.args PROPERTY" unless="ws-registry.query.args" />
+        <echo message="Querying Web Service registry..."/>
+        <java fork="true" classname="step.framework.ws.registry.Main">
+            <arg line="${ws-registry.query.args}"/>
+            <classpath>
+                <path refid="ws-registry.classpath" />
+            </classpath>
+        </java>
+	</target>
+	
+    <!-- PUBLIC AUXILIARY TARGETS (name, no description) -->
+    <target name="init-ws-registry">
+        <fail message="MUST DEFINE ws-registry.url PROPERTY" unless="ws-registry.url" />
+    </target>
+
+    <target name="build-ws-registry" depends="init-ws-registry">
+       <!-- description="Update ws-registry configuration files" -->
+        <!-- copy ws-registry files to build classes -->
+        <copy todir="${build.rel-dir}" overwrite="true">
+            <fileset dir="${ws-registry.rel-dir}" includes="Registration.properties,Registry.properties" />
+        </copy>
+        <antcall target="-ws-registry-replaces" />
+    </target>
+
+    <!-- PRIVATE AUXILIARY TARGETS (-name, no description) -->
+    <!-- USER NOTE: override '-ws-registry-replaces' to do more or different replaces in configuration files -->
+    <target name="-ws-registry-replaces">
+        <echo message="Replacing tokens in resource files..." />
+        <antcall target="-replace-ws-registry-tokens(dir)">
+            <param name="dir" value="${build.rel-dir}" />
+        </antcall>
+    </target>
+	
+	
+    <!-- FUNCTION TARGETS (-name(args), no description) -->
+    <target name="-replace-ws-registry-tokens(dir)">
+        <fail message="MUST DEFINE dir PROPERTY" unless="dir" />
+        <replace dir="${dir}">
+            <replacefilter token="@ws-registry.url@" value="${ws-registry.url}" />
+            <replacefilter token="@ws-registry.service.uri@" value="${ws-registry.service.uri}" />
+            <replacefilter token="@ws-registry.service.organization@" value="${ws-registry.service.organization}" />
+        </replace>
+    </target>
+
+</project>

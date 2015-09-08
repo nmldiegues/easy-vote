@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definitions name="TrustedCenter"
+             targetNamespace="http://www.easyvote.com/trustedcenter"
+             xmlns:tns="http://www.easyvote.com/trustedcenter"
+             xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+
+    <types>
+        <xsd:schema elementFormDefault="qualified"
+                    targetNamespace="http://www.easyvote.com/trustedcenter">
+
+			<xsd:complexType name="GenerateCertificateRequest">
+				<xsd:sequence>
+					<xsd:element name="distinguishedName" type="xsd:string" />
+					<xsd:element name="publicKey" type="xsd:string" />
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:element name="GenerateCertificateRequest" type="tns:GenerateCertificateRequest" />
+			
+			<xsd:complexType name="GenerateCertificateResponse">
+				<xsd:sequence>
+					<xsd:element name="serialNumber" type="xsd:string" />
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:element name="GenerateCertificateResponse" type="tns:GenerateCertificateResponse" />
+			
+			<xsd:complexType name="ValidateCertificateRequest">
+				<xsd:sequence>
+					<xsd:element name="serialNumber" type="xsd:string" />
+					<xsd:element name="distinguishedName" type="xsd:string" />
+					<xsd:element name="requesterSerialNumber" type="xsd:string" />
+					<xsd:element name="digitalSignature" type="xsd:string" />
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:element name="ValidateCertificateRequest" type="tns:ValidateCertificateRequest" />
+			
+			<xsd:complexType name="ValidateCertificateResponse">
+				<xsd:sequence>
+					<xsd:element name="valid" type="xsd:string" />
+					<xsd:element name="publicKey" type="xsd:string" />
+					<xsd:element name="digitalSignature" type="xsd:string" />
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:element name="ValidateCertificateResponse" type="tns:ValidateCertificateResponse" />
+			
+			<xsd:complexType name="GetPublicKeyRequest">
+				<xsd:sequence>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:element name="GetPublicKeyRequest" type="tns:GetPublicKeyRequest" />
+			
+			<xsd:complexType name="GetPublicKeyResponse">
+				<xsd:sequence>
+					<xsd:element name="publicKey" type="xsd:string" />
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:element name="GetPublicKeyResponse" type="tns:GetPublicKeyResponse" />
+
+           <xsd:complexType name="BlindSignatureRequestType">
+                <xsd:sequence>
+                    <xsd:element name="blindedMessage" type="xsd:string" />
+                    <xsd:element name="certificateSerialNumber" type="xsd:string" />
+                    <xsd:element name="voterId" type="xsd:string" />
+                    <xsd:element name="digitalSignature" type="xsd:string" />
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="blindSignatureRequest" type="tns:BlindSignatureRequestType" />
+
+            <xsd:complexType name="BlindSignatureResponseType">
+                <xsd:sequence>
+                    <xsd:element name="blindedMessageSigned" type="xsd:string" />
+                    <xsd:element name="digitalSignature" type="xsd:string" />
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="blindSignatureResponse" type="tns:BlindSignatureResponseType" />
+            
+            <xsd:complexType name="ExchangeSecretRequestType">
+                <xsd:sequence>
+                    <xsd:element name="certificateSerialNumber" type="xsd:string" />
+                    <xsd:element name="voterId" type="xsd:string" />
+                    <xsd:element name="digitalSignature" type="xsd:string" />
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="exchangeSecretRequest" type="tns:ExchangeSecretRequestType" />
+
+            <xsd:complexType name="ExchangeSecretResponseType">
+                <xsd:sequence>
+                    <xsd:element name="sharedKey" type="xsd:string" />
+                    <xsd:element name="digitalSignature" type="xsd:string" />
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="exchangeSecretResponse" type="tns:ExchangeSecretResponseType" />
+            
+            <xsd:complexType name="ServiceError" />
+            <xsd:element name="ServiceError" type="tns:ServiceError" />
+
+            <xsd:complexType name="TrustedCenterFault">
+                <xsd:sequence>
+                    <xsd:element name="faultType" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="TrustedCenterFault" type="tns:TrustedCenterFault" />
+            
+        </xsd:schema>
+    </types>
+
+	<message name="GenerateCertificateRequest">
+		<part name="GenerateCertificateRequest" element="tns:GenerateCertificateRequest" />
+	</message>
+	<message name="GenerateCertificateResponse">
+		<part name="GenerateCertificateResponse" element="tns:GenerateCertificateResponse" />
+	</message>
+	<message name="ValidateCertificateRequest">
+		<part name="ValidateCertificateRequest" element="tns:ValidateCertificateRequest" />
+	</message>
+	<message name="ValidateCertificateResponse">
+		<part name="ValidateCertificateResponse" element="tns:ValidateCertificateResponse" />
+	</message>
+	<message name="GetPublicKeyRequest">
+		<part name="GetPublicKeyRequest" element="tns:GetPublicKeyRequest" />
+	</message>
+	<message name="GetPublicKeyResponse">
+		<part name="GetPublicKeyResponse" element="tns:GetPublicKeyResponse" />
+	</message>
+	<message name="blindSignatureRequest">
+        <part name="parameters" element="tns:blindSignatureRequest" />
+    </message>
+    <message name="blindSignatureResponse">
+        <part name="result" element="tns:blindSignatureResponse" />
+    </message>
+    <message name="exchangeSecretRequest">
+        <part name="parameters" element="tns:exchangeSecretRequest" />
+    </message>
+    <message name="exchangeSecretResponse">
+        <part name="result" element="tns:exchangeSecretResponse" />
+    </message>
+    <message name="ServiceError">
+        <part name="fault" element="tns:ServiceError" />
+    </message>
+    <message name="TrustedCenterFault">
+        <part name="fault" element="tns:TrustedCenterFault" />
+    </message>
+
+    <portType name="TrustedCenterPortType">
+        <operation name="generateCertificate">
+            <input message="tns:GenerateCertificateRequest" name="generateCertificateRequest"/>
+            <output message="tns:GenerateCertificateResponse" name="generateCertificateResponse"/>
+            <fault message="tns:TrustedCenterFault" name="trustedCenterFault"/>
+            <fault message="tns:ServiceError" name="serviceError"/>
+        </operation>
+        <operation name="validateCertificate">
+            <input message="tns:ValidateCertificateRequest" name="validateCertificateRequest"/>
+            <output message="tns:ValidateCertificateResponse" name="validateCertificateResponse"/>
+            <fault message="tns:TrustedCenterFault" name="trustedCenterFault"/>
+            <fault message="tns:ServiceError" name="serviceError"/>
+        </operation>
+        <operation name="getPublicKey">
+            <input message="tns:GetPublicKeyRequest" name="getPublicKeyRequest"/>
+            <output message="tns:GetPublicKeyResponse" name="getPublicKeyResponse"/>
+            <fault message="tns:TrustedCenterFault" name="trustedCenterFault"/>
+            <fault message="tns:ServiceError" name="serviceError"/>
+        </operation>
+        <operation name="blindSignature">
+            <input message="tns:blindSignatureRequest" name="blindSignatureRequest"/>
+            <output message="tns:blindSignatureResponse" name="blindSignatureResponse"/>
+            <fault message="tns:TrustedCenterFault" name="trustedCenterFault"/>
+            <fault message="tns:ServiceError" name="serviceError"/>
+        </operation>
+        <operation name="exchangeSecret">
+            <input message="tns:exchangeSecretRequest" name="exchangeSecretRequest"/>
+            <output message="tns:exchangeSecretResponse" name="exchangeSecretResponse"/>
+            <fault message="tns:TrustedCenterFault" name="trustedCenterFault"/>
+            <fault message="tns:ServiceError" name="serviceError"/>
+        </operation>
+    </portType>
+
+    <binding name="TrustedCenterBinding" type="tns:TrustedCenterPortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <operation name="generateCertificate">
+            <soap:operation soapAction="" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="serviceError">
+                <soap:fault name="serviceError" use="literal" />
+            </fault>
+            <fault name="trustedCenterFault">
+                <soap:fault name="trustedCenterFault" use="literal" />
+            </fault>
+        </operation>
+        <operation name="validateCertificate">
+            <soap:operation soapAction="" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="serviceError">
+                <soap:fault name="serviceError" use="literal" />
+            </fault>
+            <fault name="trustedCenterFault">
+                <soap:fault name="trustedCenterFault" use="literal" />
+            </fault>
+        </operation>
+        <operation name="getPublicKey">
+            <soap:operation soapAction="" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="serviceError">
+                <soap:fault name="serviceError" use="literal" />
+            </fault>
+            <fault name="trustedCenterFault">
+                <soap:fault name="trustedCenterFault" use="literal" />
+            </fault>
+        </operation>
+        <operation name="blindSignature">
+            <soap:operation soapAction="" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="serviceError">
+                <soap:fault name="serviceError" use="literal" />
+            </fault>
+            <fault name="trustedCenterFault">
+                <soap:fault name="trustedCenterFault" use="literal" />
+            </fault>
+        </operation>
+        <operation name="exchangeSecret">
+            <soap:operation soapAction="" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="serviceError">
+                <soap:fault name="serviceError" use="literal" />
+            </fault>
+            <fault name="trustedCenterFault">
+                <soap:fault name="trustedCenterFault" use="literal" />
+            </fault>
+        </operation>
+    </binding>
+
+    <service name="TrustedCenterService">
+        <port name="TrustedCenterPort" binding="tns:TrustedCenterBinding">
+            <soap:address location="REPLACE_WITH_ACTUAL_URL" />
+        </port>
+    </service>
+
+
+</definitions>

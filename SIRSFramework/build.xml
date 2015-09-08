@@ -1,0 +1,80 @@
+<project name="SIRSFramework" default="build" basedir=".">
+
+	<!-- before imports - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+	<!-- load environment variables as properties -->
+	<property environment="env"/>
+
+	<!-- default folder location properties -->
+	<property name="src.rel-dir" value="src"/>
+	<property name="build.rel-dir" value="build"/>
+	<property name="lib.rel-dir" value="lib"/>
+	<property name="dist.rel-dir" value="dist"/>
+	<property name="client.jar.rel-file" value="${dist.rel-dir}/sirsframework.jar" />
+
+	<!-- classpaths -->
+	<!-- project classpath -->
+
+	<path id="project.classpath">
+		<!-- compiled classes -->
+		<pathelement location="${build.rel-dir}" />
+		<fileset dir="${lib.rel-dir}" includes="**/*.jar"/>
+	</path>
+
+	<!-- basic -->
+
+	<target name="init">
+		<mkdir dir="${build.rel-dir}"/>
+		<mkdir dir="${dist.rel-dir}"/>
+	</target>
+
+	<target name="clean"
+		        description="Delete temporary folders">
+		<delete dir="${build.rel-dir}" failonerror="false" deleteonexit="true" />
+		<delete dir="${dist.rel-dir}" failonerror="false" deleteonexit="true" />
+	</target>
+
+	<!-- compile -->
+
+	<target name="prepare-resources" depends="init">
+		<!-- description="Prepare application resource files" -->
+		<copy todir="${build.rel-dir}" overwrite="true">
+			<fileset dir="${src.rel-dir}" includes="**/*.properties,**/*.xml" excludes="" />
+		</copy>
+	</target>
+
+	<property name="compile.debug" value="true" />
+	<property name="compile.debuglevel" value="lines,vars,source" />
+
+	<target name="compile" depends="init,prepare-resources">
+		<!-- description="Compile source code" -->
+		<javac
+		            srcdir="${src.rel-dir}"
+		            destdir="${build.rel-dir}"
+		            debug="${compile.debug}"
+		            debuglevel="${compile.debuglevel}"
+		        >
+			<compilerarg line="" />
+			<!-- "-Xlint:all", "-Xlint:all,-path", "-Xlint:all,-path,-unchecked" -->
+			<classpath refid="project.classpath" />
+		</javac>
+	</target>
+
+	
+	<target name="create-client-jar" depends="compile" description="Create the Framework jar">
+		<jar destfile="${client.jar.rel-file}" basedir="${build.rel-dir}">
+		</jar>
+	</target>
+	
+
+<!-- build -->
+
+<target name="build" depends="compile"
+			    description="Build the project">
+</target>
+
+	
+<target name="rebuild" depends="clean,build">
+	<!-- description="Rebuild the project" -->
+</target>
+
+</project>

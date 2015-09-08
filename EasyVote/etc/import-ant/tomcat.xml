@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="tomcat">
+
+    <description>Build environment for Tomcat</description>
+
+    <property name="tomcat.dir" location="${env.CATALINA_HOME}" />
+
+    <!--property name="tomcat.username" value="admin" /-->
+    <!--property name="tomcat.password" value="adminadmin" /-->
+
+    <property name="tomcat.host" value="localhost" />
+    <property name="tomcat.port" value="8080" />
+    <property name="tomcat.port.secure" value="8443" />
+    <property name="tomcat.protocol" value="http" />
+    <property name="tomcat.protocol.secure" value="https" />
+    <property name="tomcat.server" value="${tomcat.host}:${tomcat.port}" />
+    <property name="tomcat.server.secure" value="${tomcat.host}:${tomcat.port.secure}" />
+    <property name="tomcat.url" value="${tomcat.protocol}://${tomcat.server}" />
+    <property name="tomcat.url.secure" value="${tomcat.protocol.secure}://${tomcat.server.secure}" />
+
+    <property name="tomcat.web-manager.context.path" value="manager" />
+    <property name="tomcat.web-manager.url" value="${tomcat.url}/${tomcat.web-manager.context.path}" />
+
+    <path id="tomcat.jars.path">
+        <fileset dir="${tomcat.dir}/lib">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
+    <path id="catalina-ant.jar.path">
+        <pathelement location="${tomcat.dir}/lib/catalina-ant.jar"/>
+    </path>
+
+	<taskdef resource="org/apache/catalina/ant/antlib.xml" classpathref="catalina-ant.jar.path"  uri="org.apache.tomcat.ant"/>
+
+    <target name="deploy" description="Deploy web application">
+        <fail message="MUST DEFINE deploy.war.rel-file PROPERTY" unless="deploy.war.rel-file" />
+        <property name="deploy.war.file" location="${deploy.war.rel-file}" />
+        <deploy war="file:${deploy.war.file}" path="/${deploy.context}"
+            url="${tomcat.web-manager.url}" 
+            username="${tomcat.username}" password="${tomcat.password}"
+            xmlns="org.apache.tomcat.ant"
+             />
+    </target>
+
+    <target name="undeploy" description="Undeploy web application">
+        <undeploy path="/${deploy.context}" url="${tomcat.web-manager.url}"
+            username="${tomcat.username}" password="${tomcat.password}"
+            xmlns="org.apache.tomcat.ant"
+             />
+    </target>
+
+    <target name="redeploy" depends="undeploy,deploy" />
+    <!-- description="Undeploy and deploy Web aplication" -->
+
+</project>

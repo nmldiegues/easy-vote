@@ -1,0 +1,198 @@
+<project name="Registration" default="build" basedir=".">
+
+	<!-- before imports - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+	<!-- load environment variables as properties -->
+	<property environment="env"/>
+
+	<!-- load properties files -->
+	<property file="build.properties"/>
+	<property file="../build.properties"/>
+	<property file="${user.home}/build.properties"/>
+
+	<!-- default folder location properties -->
+	<property name="src.rel-dir" value="src"/>
+	<property name="tests.src.rel-dir" value="tests"/>
+	<property name="etc.rel-dir" value="etc"/>
+	<property name="build.rel-dir" value="build"/>
+	<property name="dist.rel-dir" value="dist"/>
+	<property name="doc.rel-dir" value="${dist.rel-dir}/javadoc" />
+	<property name="config.rel-dir" value="config" />
+	<property name="web-content.rel-dir" value="WEB-INF" />
+	<property name="lib.rel-dir" value="${web-content.rel-dir}/lib"/>
+	<property name="dir" value="${src.rel-dir}/xml" />
+	<property name="sirsframework.rel-dir" value="../SIRSFramework/"/>
+	<property name="trustedcenter.rel-dir" value="../TrustedCenter/"/>
+	<property name="client.jar.rel-file" value="${dist.rel-dir}/${ant.project.name}.jar" />
+
+	<!-- IMPORTS - - - - - -  - - - - - - - - - - - - - - - - - - - - - - - - -->
+	<import file="config/jax-ws-server/jax.xml"/>
+	<import file="./config/jax-ws-server/tomcat.xml"/>
+
+	<!-- after imports - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+	<!-- Web Service definitions -->
+	<property name="deploy.context" value="Registration"/>
+	<property name="jax-ws-server.wsdl.file-name" value="Registration.wsdl" />
+	<property name="jax-ws-server.wsdl.namespace" value="http://www.easyvote.com/registration" />
+	<property name="jax-ws-server.wsdl.service-name" value="RegistrationService" />
+	<property name="jax-ws-server.wsdl.port-name" value="RegistrationPort" />
+	<property name="jax-ws-server.ties.package" value="registration.ws.ties" />
+	<property name="jax-ws-server.ties.interface.simple-name" value="RegistrationPortType" />
+	<property name="jax-ws-server.impl.package" value="registration.ws" />
+	<property name="jax-ws-server.impl.class.simple-name" value="RegistrationServiceImpl" />
+	<property name="jax-ws-server.wsdl.url" value="WEB-INF/wsdl/${jax-ws-server.wsdl.file-name}" />
+
+	<!-- classpaths -->
+	<!-- project classpath -->
+
+	<path id="project.classpath">
+		<!-- compiled classes -->
+		<pathelement location="${build.rel-dir}" />
+		<fileset dir="${lib.rel-dir}" includes="**/*.jar"/>
+		<fileset dir="${sirsframework.rel-dir}${dist.rel-dir}" includes="**/*.jar"/>
+		<fileset dir="${trustedcenter.rel-dir}${dist.rel-dir}" includes="**/*.jar"/>
+	</path>
+
+	<!-- basic -->
+
+	<target name="init">
+		<mkdir dir="${build.rel-dir}"/>
+		<mkdir dir="${dist.rel-dir}"/>
+	</target>
+
+	<target name="clean"
+		        description="Delete temporary folders">
+		<delete dir="${build.rel-dir}" failonerror="false" deleteonexit="true" />
+		<delete dir="${dist.rel-dir}" failonerror="false" deleteonexit="true" />
+		<delete dir="${web-inf.rel-dir}" failonerror="false" deleteonexit="true" />
+	</target>
+	
+	<!-- web application -->
+
+	    <property name="deploy.context" value="${ant.project.name}" />
+	    <property name="deploy.war.rel-file" value="${dist.rel-dir}/${ant.project.name}.war" />
+
+		<target name="create-war" depends="compile" description="Create WAR deployable module">
+			<war destfile="${deploy.war.rel-file}"
+				 webxml="${config.rel-dir}/jax-ws-server/web.xml">
+				<webinf dir="${config.rel-dir}/jax-ws-server/" includes="**/*.xml"/>
+				<webinf dir="${web-content.rel-dir}" excludes="**/WEB-INF/classes/** **/WEB-INF/lib/**"/>
+				<classes dir="${build.rel-dir}"/>
+				<lib dir="${lib.rel-dir}"/>
+				<lib dir="${sirsframework.rel-dir}${dist.rel-dir}" includes="**/*.jar"/>
+				<lib dir="${trustedcenter.rel-dir}${dist.rel-dir}" includes="**/*.jar"/>
+			</war>
+		</target>
+
+	<target name="create-client-jar" depends="compile" description="Create the WS client JAR file">
+		<mkdir dir="${dist.rel-dir}"/>
+		<jar destfile="${client.jar.rel-file}">
+			<!-- include only client classes and resources -->
+			<zipfileset dir="${build.rel-dir}">
+				<include name="**"/>
+			</zipfileset>
+		</jar>
+	</target>
+
+	<!-- compile -->
+
+	<property name="resources.to-copy" value="**/*.properties,**/*.xml"/>
+	<filterset id="resources.update-rules" begintoken="@" endtoken="@">
+		<filter token="tomcat.url" value="${tomcat.url}"/>
+<!--		<filter token="context" value=""/> in dev-mode, the root is the application -->
+		<filter token="context" value="/${deploy.context}"/>
+	</filterset>
+
+	<target name="prepare-resources" depends="init,-replace-jax-ws-server-tokens(dir),wsimport">
+		<!-- description="Prepare application resource files" -->
+		<copy todir="${build.rel-dir}" overwrite="true">
+			<fileset dir="${src.rel-dir}" includes="${resources.to-copy}"/>
+			<filterset refid="resources.update-rules"/>
+			<fileset dir="${src.rel-dir}" includes="**/*.xml" />
+		</copy>
+	</target>
+	
+	<property name="compile.debug" value="true" />
+	<property name="compile.debuglevel" value="lines,vars,source" />
+
+	<target name="compile" depends="init,prepare-resources">
+		<!-- description="Compile source code" -->
+		<javac
+		            srcdir="${src.rel-dir}"
+		            destdir="${build.rel-dir}"
+		            debug="${compile.debug}"
+		            debuglevel="${compile.debuglevel}"
+		        >
+			<compilerarg line="" />
+			<!-- "-Xlint:all", "-Xlint:all,-path", "-Xlint:all,-path,-unchecked" -->
+			<classpath refid="project.classpath" />
+		</javac>
+	</target>
+
+	<!-- jax-ws-server -->
+
+	<property name="wsdl.rel-file" value="${jax-ws-server.wsdl.url}" />
+
+	<target name="wsimport" depends="init,-generate-wsdl-url" unless="recompile.flag">
+		<!-- description="Generate Web Service server-side Java code from WSDL" -->
+		<echo message="Executing wsimport to generate server-side code..." />
+		<echo message="WSDL: ${wsdl.rel-file}" />
+		<wsimport wsdl="${jax-ws-server.wsdl.url}"
+		                  debug="true"
+		                  verbose="true"
+		                  destdir="${build.rel-dir}"
+		                  sourcedestdir="${build.rel-dir}"
+						  package="${jax-ws-server.ties.package}"
+		        >
+			
+		</wsimport>
+		<!-- The sources are in the build folder, for programmer reference -->
+	</target>
+	
+	<target name="-replace-jax-ws-server-tokens(dir)">
+	        <fail message="MUST DEFINE dir PROPERTY" unless="dir" />
+	        <!-- define composite properties -->
+	        <property name="jax-ws-server.ties.interface.name" value="${jax-ws-server.ties.package}.${jax-ws-server.ties.interface.simple-name}" />
+	        <property name="jax-ws-server.impl.class.name" value="${jax-ws-server.impl.package}.${jax-ws-server.impl.class.simple-name}" />
+	        <!-- perform simple value token replacements 
+	        <replace dir="${dir}" summary="${config-replaces-summary.option}">
+	            <replacefilter token="@jax-ws-server.wsdl.file-name@" value="${jax-ws-server.wsdl.file-name}" />
+	            <replacefilter token="@jax-ws-server.wsdl.namespace@" value="${jax-ws-server.wsdl.namespace}" />
+	            <replacefilter token="@jax-ws-server.wsdl.service-name@" value="${jax-ws-server.wsdl.service-name}" />
+	            <replacefilter token="@jax-ws-server.wsdl.port-name@" value="${jax-ws-server.wsdl.port-name}" />
+	            <replacefilter token="@jax-ws-server.ties.package@" value="${jax-ws-server.ties.package}" />
+	            <replacefilter token="@jax-ws-server.ties.interface.simple-name@" value="${jax-ws-server.ties.interface.simple-name}" />
+	            <replacefilter token="@jax-ws-server.ties.interface.name@" value="${jax-ws-server.ties.interface.name}" />
+	            <replacefilter token="@jax-ws-server.impl.package@" value="${jax-ws-server.impl.package}" />
+	            <replacefilter token="@jax-ws-server.impl.class.simple-name@" value="${jax-ws-server.impl.class.simple-name}" />
+	            <replacefilter token="@jax-ws-server.impl.class.name@" value="${jax-ws-server.impl.class.name}" />
+	        </replace> -->
+	        <!-- perform multi-line value token replacements 
+	        <replace dir="${dir}" token="@jax-ws-server.handler-chains@">
+	            <replacevalue><![CDATA[
+	            <jws:handler-chains xmlns:jws="http://java.sun.com/xml/ns/javaee">
+					<jws:handler-chain>
+					</jws:handler-chain>
+				</jws:handler-chains>
+	            ]]></replacevalue>
+	        </replace> -->
+	    </target>
+	
+	<!-- web application -->
+
+	    <property name="deploy.context" value="${ant.project.name}" />
+	    <property name="deploy.war.rel-file" value="${dist.rel-dir}/${ant.project.name}.war" />
+
+	
+<!-- build -->
+
+<target name="build" depends="compile, create-war"
+			    description="Build the project">
+</target>
+
+	
+<target name="rebuild" depends="clean,build">
+	<!-- description="Rebuild the project" -->
+</target>
+
+</project>

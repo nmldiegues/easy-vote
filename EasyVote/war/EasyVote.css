@@ -1,0 +1,93 @@
+/** Add css rules here for your application. */
+
+/** Example rules used by the template application (remove for your app) */
+
+/** Most GWT widgets already have a style name defined */
+.easyvote-LoginWidget {
+	width: 100%;
+	vertical-align: middle;
+}
+
+.LoginWidget-component {
+	margin-right: 5px;
+}
+
+.LoginWidget-logoutButton {
+	background-color: transparent;
+	background-image: none;
+	text-decoration: none;
+}
+
+.easyvote-BallotWidget {
+	width: 500px;
+	margin-top: 15px;
+	margin-left: auto;
+	margin-right: auto;
+	background-color: #feff99;
+	border-style: solid;
+	border-color: #9e9f39;
+	padding: 10px;
+}
+
+.BallotWidget-optionsTable {
+	width: 50%;
+	margin-top: 15px;
+	margin-right: auto;
+	margin-left: auto;
+	border-collapse: collapse;
+}
+
+.BallotWidget-optionsTableCells {
+	padding: 10px;
+	border: 2px solid #9e9f39;
+}
+
+.BallotWidget-submitVoteButton {
+	width: 100px;
+	margin-right: auto;
+	margin-left: auto;
+}
+
+.easyvote-infoPanel {
+	width: 100%;
+	background-color: #bbc7e5;
+	font-weight: bold;
+	color: #3b4755;
+	border-style: solid;
+	padding: 10px;
+}
+
+.optionsPanel {
+	margin: 10px;
+}
+
+.tokensPanel {
+	width: 100%;
+	background-color: #d7f9e1;
+	border-style: solid;
+	border-color: #6ea87f;
+	padding: 5px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
+.serverResponseLabelError {
+  color: red;
+}
+
+/** Set ids using widget.getElement().setId("idOfElement") */
+#mainPageColumn {
+	width: 700px;
+	min-height: 300px;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 10px;
+	background-color: #606d90;
+	background-color: white;
+}
+
+#logoContainer {
+	width: 400px;
+	margin-left: auto;
+	margin-right: auto;
+}

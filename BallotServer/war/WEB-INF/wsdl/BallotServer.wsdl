@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definitions name="BallotServer"
+             targetNamespace="http://www.easyvote.com/ballotserver"
+             xmlns:tns="http://www.easyvote.com/ballotserver"
+             xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+
+    <types>
+        <xsd:schema elementFormDefault="qualified"
+                    targetNamespace="http://www.easyvote.com/ballotserver">
+			
+						<xsd:complexType name="getBallotSheetRequestType">
+                <xsd:sequence>
+                    <xsd:element name="regSignedToken" type="xsd:string" />
+                    <xsd:element name="tcSignedToken" type="xsd:string" />
+                    <xsd:element name="regToken" type="xsd:string" />
+                    <xsd:element name="tcToken" type="xsd:string" />
+                    <xsd:element name="mac" type="xsd:string" />
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="getBallotSheetRequest" type="tns:getBallotSheetRequestType" />
+
+            <xsd:complexType name="getBallotSheetResponseType">
+				<xsd:sequence>
+					<xsd:element name="candNamesAndIds" type="xsd:string" />
+					<xsd:element name="safeOffset" type="xsd:string" />
+					<xsd:element name="electionId" type="xsd:string" />
+					<xsd:element name="question" type="xsd:string" />
+					<xsd:element name="mac" type="xsd:string" />
+				</xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="getBallotSheetResponse" type="tns:getBallotSheetResponseType" />
+
+			<xsd:complexType name="ExchangeSecretRequestType">
+                <xsd:sequence>
+                    <xsd:element name="regToken" type="xsd:string" />
+                    <xsd:element name="tcToken" type="xsd:string" />
+                    <xsd:element name="sharedKey" type="xsd:string" />
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="exchangeSecretRequest" type="tns:ExchangeSecretRequestType" />
+
+            <xsd:complexType name="ExchangeSecretResponseType">
+                <xsd:sequence>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="exchangeSecretResponse" type="tns:ExchangeSecretResponseType" /> 
+
+			<xsd:complexType name="castVoteRequestType">
+                <xsd:sequence>
+                	<xsd:element name="chosenSquare" type="xsd:string" />
+                    <xsd:element name="regSignedToken" type="xsd:string" />
+                    <xsd:element name="tcSignedToken" type="xsd:string" />
+                    <xsd:element name="regToken" type="xsd:string" />
+                    <xsd:element name="tcToken" type="xsd:string" />
+                    <xsd:element name="auditing" type="xsd:string" />
+                    <xsd:element name="mac" type="xsd:string" />
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="castVoteRequest" type="tns:castVoteRequestType" />
+
+            <xsd:complexType name="castVoteResponseType">
+				<xsd:sequence>
+				</xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="castVoteResponse" type="tns:castVoteResponseType" />
+            
+			<xsd:complexType name="safeOffsetEncryptionRequestType">
+                <xsd:sequence>
+                	<xsd:element name="operation" type="xsd:string" />
+                    <xsd:element name="safeOffset" type="xsd:string" />
+                    <xsd:element name="certNumber" type="xsd:string" />
+                    <xsd:element name="digitalSignature" type="xsd:string" />
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="safeOffsetEncryptionRequest" type="tns:safeOffsetEncryptionRequestType" />
+
+            <xsd:complexType name="safeOffsetEncryptionResponseType">
+				<xsd:sequence>
+					<xsd:element name="safeOffset" type="xsd:string" />
+                    <xsd:element name="digitalSignature" type="xsd:string" />
+				</xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="safeOffsetEncryptionResponse" type="tns:safeOffsetEncryptionResponseType" />
+
+            <xsd:complexType name="ServiceError" />
+            <xsd:element name="ServiceError" type="tns:ServiceError" />
+            
+            <xsd:complexType name="verifyVoteRequestType">
+                <xsd:sequence>
+                    <xsd:element name="regSignedToken" type="xsd:string" />
+                    <xsd:element name="tcSignedToken" type="xsd:string" />
+                    <xsd:element name="regToken" type="xsd:string" />
+                    <xsd:element name="tcToken" type="xsd:string" />
+                    <xsd:element name="safeOffset" type="xsd:string" />
+                    <xsd:element name="mac" type="xsd:string" />
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="verifyVoteRequest" type="tns:verifyVoteRequestType"/>
+            
+            <xsd:complexType name="verifyVoteResponseType">
+                <xsd:sequence>
+                    <xsd:element name="chosenSquare" type="xsd:string" />
+                    <xsd:element name="mac" type="xsd:string" />
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="verifyVoteResponse" type="tns:verifyVoteResponseType"/>
+            
+            <xsd:complexType name="translateOffsetRequestType">
+                <xsd:sequence>
+                    <xsd:element name="regSignedToken" type="xsd:string" />
+                    <xsd:element name="tcSignedToken" type="xsd:string" />
+                    <xsd:element name="regToken" type="xsd:string" />
+                    <xsd:element name="tcToken" type="xsd:string" />
+                    <xsd:element name="safeOffset" type="xsd:string" />
+                    <xsd:element name="mac" type="xsd:string" />
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="translateOffsetRequest" type="tns:translateOffsetRequestType"/>
+            
+            <xsd:complexType name="translateOffsetResponseType">
+                <xsd:sequence>
+                    <xsd:element name="offset" type="xsd:string" />
+                    <xsd:element name="mac" type="xsd:string" />
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="translateOffsetResponse" type="tns:translateOffsetResponseType"/>
+
+            <xsd:complexType name="BallotServerFault">
+                <xsd:sequence>
+                    <xsd:element name="faultType" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="BallotServerFault" type="tns:BallotServerFault" />
+
+        </xsd:schema>
+    </types>
+    
+    <message name="getBallotSheetRequest">
+        <part name="parameters" element="tns:getBallotSheetRequest" />
+    </message>
+    <message name="getBallotSheetResponse">
+        <part name="result" element="tns:getBallotSheetResponse" />
+    </message>
+    <message name="exchangeSecretRequest">
+        <part name="parameters" element="tns:exchangeSecretRequest" />
+    </message>
+    <message name="exchangeSecretResponse">
+        <part name="result" element="tns:exchangeSecretResponse" />
+    </message>
+    <message name="castVoteRequest">
+        <part name="parameters" element="tns:castVoteRequest" />
+    </message>
+    <message name="castVoteResponse">
+        <part name="result" element="tns:castVoteResponse" />
+    </message>
+    <message name="safeOffsetEncryptionRequest">
+        <part name="parameters" element="tns:safeOffsetEncryptionRequest" />
+    </message>
+    <message name="safeOffsetEncryptionResponse">
+        <part name="result" element="tns:safeOffsetEncryptionResponse" />
+    </message>
+    <message name="verifyVoteRequest">
+        <part name="parameters" element="tns:verifyVoteRequest" />
+    </message>
+    <message name="verifyVoteResponse">
+        <part name="result" element="tns:verifyVoteResponse" />
+    </message>
+    <message name="translateOffsetRequest">
+        <part name="parameters" element="tns:translateOffsetRequest" />
+    </message>
+    <message name="translateOffsetResponse">
+        <part name="result" element="tns:translateOffsetResponse" />
+    </message>
+    <message name="ServiceError">
+        <part name="fault" element="tns:ServiceError" />
+    </message>
+    <message name="BallotServerFault">
+        <part name="fault" element="tns:BallotServerFault" />
+    </message>
+
+    <portType name="BallotServerPortType">
+	    <operation name="getBallotSheet">
+            <input message="tns:getBallotSheetRequest" name="getBallotSheetRequest"/>
+            <output message="tns:getBallotSheetResponse" name="getBallotSheetResponse"/>
+            <fault message="tns:BallotServerFault" name="ballotServerFault"/>
+            <fault message="tns:ServiceError" name="serviceError"/>
+        </operation>
+        <operation name="exchangeSecret">
+            <input message="tns:exchangeSecretRequest" name="exchangeSecretRequest"/>
+            <output message="tns:exchangeSecretResponse" name="exchangeSecretResponse"/>
+            <fault message="tns:BallotServerFault" name="ballotServerFault"/>
+            <fault message="tns:ServiceError" name="serviceError"/>
+        </operation>
+       	<operation name="castVote">
+            <input message="tns:castVoteRequest" name="castVoteRequest"/>
+            <output message="tns:castVoteResponse" name="castVoteResponse"/>
+            <fault message="tns:BallotServerFault" name="ballotServerFault"/>
+            <fault message="tns:ServiceError" name="serviceError"/>
+        </operation>
+       	<operation name="safeOffsetEncryption">
+            <input message="tns:safeOffsetEncryptionRequest" name="safeOffsetEncryptionRequest"/>
+            <output message="tns:safeOffsetEncryptionResponse" name="safeOffsetEncryptionResponse"/>
+            <fault message="tns:BallotServerFault" name="ballotServerFault"/>
+            <fault message="tns:ServiceError" name="serviceError"/>
+        </operation>
+        <operation name="verifyVote">
+            <input message="tns:verifyVoteRequest" name="verifyVoteRequest"/>
+            <output message="tns:verifyVoteResponse" name="verifyVoteResponse"/>
+            <fault message="tns:BallotServerFault" name="ballotServerFault"/>
+            <fault message="tns:ServiceError" name="serviceError"/>
+        </operation>
+        <operation name="translateOffset">
+            <input message="tns:translateOffsetRequest" name="translateOffsetRequest"/>
+            <output message="tns:translateOffsetResponse" name="translateOffsetResponse"/>
+            <fault message="tns:BallotServerFault" name="ballotServerFault"/>
+            <fault message="tns:ServiceError" name="serviceError"/>
+        </operation>
+    </portType>
+
+    <binding name="BallotServerBinding" type="tns:BallotServerPortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <operation name="getBallotSheet">
+            <soap:operation soapAction="" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="serviceError">
+                <soap:fault name="serviceError" use="literal" />
+            </fault>
+            <fault name="ballotServerFault">
+                <soap:fault name="ballotServerFault" use="literal" />
+            </fault>
+        </operation>
+        <operation name="exchangeSecret">
+            <soap:operation soapAction="" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="serviceError">
+                <soap:fault name="serviceError" use="literal" />
+            </fault>
+            <fault name="ballotServerFault">
+                <soap:fault name="ballotServerFault" use="literal" />
+            </fault>
+        </operation>
+        <operation name="castVote">
+            <soap:operation soapAction="" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="serviceError">
+                <soap:fault name="serviceError" use="literal" />
+            </fault>
+            <fault name="ballotServerFault">
+                <soap:fault name="ballotServerFault" use="literal" />
+            </fault>
+        </operation>
+        <operation name="safeOffsetEncryption">
+            <soap:operation soapAction="" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="serviceError">
+                <soap:fault name="serviceError" use="literal" />
+            </fault>
+            <fault name="ballotServerFault">
+                <soap:fault name="ballotServerFault" use="literal" />
+            </fault>
+        </operation>
+        <operation name="verifyVote">
+            <soap:operation soapAction="" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="serviceError">
+                <soap:fault name="serviceError" use="literal" />
+            </fault>
+            <fault name="ballotServerFault">
+                <soap:fault name="ballotServerFault" use="literal" />
+            </fault>
+        </operation>
+        <operation name="translateOffset">
+            <soap:operation soapAction="" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="serviceError">
+                <soap:fault name="serviceError" use="literal" />
+            </fault>
+            <fault name="ballotServerFault">
+                <soap:fault name="ballotServerFault" use="literal" />
+            </fault>
+        </operation>
+    </binding>
+
+    <service name="BallotServerService">
+        <port name="BallotServerPort" binding="tns:BallotServerBinding">
+            <soap:address location="REPLACE_WITH_ACTUAL_URL" />
+        </port>
+    </service>
+
+
+</definitions>
+

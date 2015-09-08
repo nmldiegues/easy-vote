@@ -1,0 +1,49 @@
+<project name="jax">
+
+    <description>Build environment for Java Web Services</description>
+
+
+    <!-- JAX tools classpath -->
+    <path id="jax.tools.classpath">
+        <fileset dir="${env.STEP_HOME}/lib">
+            <include name="*.jar" />
+        </fileset>
+    </path>
+
+
+    <!-- support for JAX-B tasks -->
+    <taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
+        <classpath refid="jax.tools.classpath" />
+    </taskdef>
+
+    <!-- support for JAX-WS tasks -->
+    <taskdef name="wsgen" classname="com.sun.tools.ws.ant.WsGen">
+        <classpath refid="jax.tools.classpath" />
+    </taskdef>
+
+    <taskdef name="wsimport" classname="com.sun.tools.ws.ant.WsImport">
+        <classpath refid="jax.tools.classpath" />
+    </taskdef>
+
+
+    <!-- helper targets -->
+    <target name="-generate-file-url-prefix">
+        <!-- file url syntax is:  file://host/path ; assuming host is empty, the prefix is different for windows and unix systems -->
+        <condition property="file-url-prefix" value="file:///">
+            <os family="windows" />
+        </condition>
+        <condition property="file-url-prefix" value="file://">
+            <not><os family="windows" /></not> <!-- ~ unix -->
+        </condition>
+    </target>
+
+    <target name="-generate-wsdl-url" depends="-generate-file-url-prefix">
+        <property name="wsdl.file" location="${wsdl.rel-file}" />
+        <path id="wsdl.path">
+            <pathelement location="${wsdl.file}"/>
+        </path>
+        <pathconvert property="wsdl.file./" refid="wsdl.path" pathsep=";" dirsep="/" />
+        <property name="wsdl.url" value="${file-url-prefix}${wsdl.file./}" />
+    </target>
+
+</project>

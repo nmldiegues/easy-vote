@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definitions name="Registration"
+             targetNamespace="http://www.easyvote.com/registration"
+             xmlns:tns="http://www.easyvote.com/registration"
+             xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+
+    <types>
+        <xsd:schema elementFormDefault="qualified"
+                    targetNamespace="http://www.easyvote.com/registration">
+
+           <xsd:complexType name="BlindSignatureRequestType">
+                <xsd:sequence>
+                    <xsd:element name="blindedMessage" type="xsd:string" />
+                    <xsd:element name="certificateSerialNumber" type="xsd:string" />
+                    <xsd:element name="voterId" type="xsd:string" />
+                    <xsd:element name="credentials" type="xsd:string" />
+                    <xsd:element name="digitalSignature" type="xsd:string" />
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="blindSignatureRequest" type="tns:BlindSignatureRequestType" />
+
+            <xsd:complexType name="BlindSignatureResponseType">
+                <xsd:sequence>
+                    <xsd:element name="blindedMessageSigned" type="xsd:string" />
+                    <xsd:element name="digitalSignature" type="xsd:string" />
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="blindSignatureResponse" type="tns:BlindSignatureResponseType" />
+            
+            <xsd:complexType name="ExchangeSecretRequestType">
+                <xsd:sequence>
+                    <xsd:element name="certificateSerialNumber" type="xsd:string" />
+                    <xsd:element name="voterId" type="xsd:string" />
+                    <xsd:element name="credentials" type="xsd:string" />
+                    <xsd:element name="digitalSignature" type="xsd:string" />
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="exchangeSecretRequest" type="tns:ExchangeSecretRequestType" />
+
+            <xsd:complexType name="ExchangeSecretResponseType">
+                <xsd:sequence>
+                    <xsd:element name="sharedKey" type="xsd:string" />
+                    <xsd:element name="digitalSignature" type="xsd:string" />
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="exchangeSecretResponse" type="tns:ExchangeSecretResponseType" /> 
+            
+            <xsd:complexType name="TotalVotersRequestType">
+                <xsd:sequence>
+                    <xsd:element name="certificateSerialNumber" type="xsd:string" />
+                    <xsd:element name="digitalSignature" type="xsd:string" />
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="totalVotersRequest" type="tns:TotalVotersRequestType" />
+
+            <xsd:complexType name="TotalVotersResponseType">
+                <xsd:sequence>
+                    <xsd:element name="numberVotersRegistered" type="xsd:int" />
+                    <xsd:element name="digitalSignature" type="xsd:string" />
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="totalVotersResponse" type="tns:TotalVotersResponseType" /> 
+						
+			<xsd:complexType name="ServiceError" />
+            <xsd:element name="ServiceError" type="tns:ServiceError" />
+
+            <xsd:complexType name="RegistrationFault">
+                <xsd:sequence>
+                    <xsd:element name="faultType" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="RegistrationFault" type="tns:RegistrationFault" />
+        </xsd:schema>
+    </types>
+
+    <message name="blindSignatureRequest">
+        <part name="parameters" element="tns:blindSignatureRequest" />
+    </message>
+    <message name="blindSignatureResponse">
+        <part name="result" element="tns:blindSignatureResponse" />
+    </message>
+    <message name="exchangeSecretRequest">
+        <part name="parameters" element="tns:exchangeSecretRequest" />
+    </message>
+    <message name="exchangeSecretResponse">
+        <part name="result" element="tns:exchangeSecretResponse" />
+    </message>
+    <message name="totalVotersRequest">
+        <part name="parameters" element="tns:totalVotersRequest" />
+    </message>
+    <message name="totalVotersResponse">
+        <part name="result" element="tns:totalVotersResponse" />
+    </message>
+    <message name="ServiceError">
+        <part name="fault" element="tns:ServiceError" />
+    </message>
+    <message name="RegistrationFault">
+        <part name="fault" element="tns:RegistrationFault" />
+    </message>
+
+    <portType name="RegistrationPortType">
+        <operation name="blindSignature">
+            <input message="tns:blindSignatureRequest" name="blindSignatureRequest"/>
+            <output message="tns:blindSignatureResponse" name="blindSignatureResponse"/>
+        		<fault message="tns:RegistrationFault" name="registrationFault"/>
+            <fault message="tns:ServiceError" name="serviceError"/>
+        </operation>
+        <operation name="exchangeSecret">
+            <input message="tns:exchangeSecretRequest" name="exchangeSecretRequest"/>
+            <output message="tns:exchangeSecretResponse" name="exchangeSecretResponse"/>
+        		<fault message="tns:RegistrationFault" name="registrationFault"/>
+            <fault message="tns:ServiceError" name="serviceError"/>
+        </operation>
+        <operation name="totalVoters">
+            <input message="tns:totalVotersRequest" name="totalVotersRequest"/>
+            <output message="tns:totalVotersResponse" name="totalVotersResponse"/>
+        		<fault message="tns:RegistrationFault" name="registrationFault"/>
+            <fault message="tns:ServiceError" name="serviceError"/>
+        </operation>
+    </portType>
+
+    <binding name="RegistrationBinding" type="tns:RegistrationPortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <operation name="blindSignature">
+            <soap:operation soapAction="" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="serviceError">
+                <soap:fault name="serviceError" use="literal" />
+            </fault>
+            <fault name="registrationFault">
+                <soap:fault name="registrationFault" use="literal" />
+            </fault>
+        </operation>
+        <operation name="exchangeSecret">
+            <soap:operation soapAction="" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="serviceError">
+                <soap:fault name="serviceError" use="literal" />
+            </fault>
+            <fault name="registrationFault">
+                <soap:fault name="registrationFault" use="literal" />
+            </fault>
+        </operation>
+        <operation name="totalVoters">
+            <soap:operation soapAction="" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="serviceError">
+                <soap:fault name="serviceError" use="literal" />
+            </fault>
+            <fault name="registrationFault">
+                <soap:fault name="registrationFault" use="literal" />
+            </fault>
+        </operation>
+    </binding>
+
+    <service name="RegistrationService">
+        <port name="RegistrationPort" binding="tns:RegistrationBinding">
+            <soap:address location="REPLACE_WITH_ACTUAL_URL" />
+        </port>
+    </service>
+
+
+</definitions>

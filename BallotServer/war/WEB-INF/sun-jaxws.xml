@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<endpoints xmlns="http://java.sun.com/xml/ns/jax-ws/ri/runtime" version="2.0">
+
+    <endpoint name="endpoint"
+              interface="ballotserver.ws.ties.BallotServerPortType"
+              implementation="ballotserver.ws.BallotServerServiceImpl"
+              wsdl="WEB-INF/wsdl/BallotServer.wsdl"
+              service="{http://www.easyvote.com/ballotserver}BallotServerService"
+              port="{http://www.easyvote.com/ballotserver}BallotServerPort"
+              url-pattern="/endpoint" />
+
+</endpoints>

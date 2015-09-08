@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<endpoints xmlns="http://java.sun.com/xml/ns/jax-ws/ri/runtime" version="2.0">
+
+    <endpoint name="endpoint"
+              interface="registration.ws.ties.TrustedCeterPortType"
+              implementation="trustedcenter.ws.TrustedCenterServiceImpl"
+              wsdl="WEB-INF/wsdl/TrustedCenter.wsdl"
+              service="{http://www.easyvote.com/trustedcenter}TrustedCenterService"
+              port="{http://www.easyvote.com/trustedcenter}TrustedCenterPort"
+              url-pattern="/endpoint" />
+
+</endpoints>

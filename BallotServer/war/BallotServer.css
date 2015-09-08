@@ -1,0 +1,73 @@
+/** Add css rules here for your application. */
+
+
+/** Example rules used by the template application (remove for your app) */
+.toolbox {
+	margin-top: 6px;
+	padding: 2px;
+	border-style: solid;
+	border-color: #6ea87f;
+	background-color: #7eda99;
+	font-weight: bold;
+}
+
+.tool {
+	margin: 3px 3px;
+}
+
+.electionsPanel-infoPanel {
+	background-color: #bbc7e5;
+	font-weight: bold;
+	color: #3b4755;
+	border-style: solid;
+	padding: 10px;
+}
+
+.ballotServer-ElectionWidget {
+	width: 100%;
+	background-color: #d7f9e1;
+	border-style: solid;
+	border-color: #6ea87f;
+	padding: 5px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
+.ballotServer-CandidateListWidget {
+	padding: 8px;
+}
+
+.sendButton {
+  display: block;
+  font-size: 16pt;
+}
+
+/** Most GWT widgets already have a style name defined */
+.dialogVPanel {
+  margin: 5px;
+}
+
+.serverResponseLabelError {
+  color: red;
+}
+
+/** Set ids using widget.getElement().setId("idOfElement") */
+#closeButton {
+  margin: 15px 6px 6px;
+}
+
+#mainPageColumn {
+	width: 700px;
+	min-height: 300px;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 10px;
+	background-color: #606d90;
+	background-color: white;
+}
+
+#logoContainer {
+	width: 400px;
+	margin-left: auto;
+	margin-right: auto;
+}
